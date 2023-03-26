@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@Environment(value= EnvType.CLIENT)
 @Mixin(RedstoneWireBlock.class)
 public class RedstoneWireBlockMixin
 {
@@ -29,12 +30,11 @@ public class RedstoneWireBlockMixin
         return false;
     }
     @Inject(at = @At(value = "RETURN", ordinal = 1), method = "onUse")
-    @Environment(value= EnvType.CLIENT)
     public void playSound(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir)
     {
         Config config = ConfigManager.getInstance().getConfigFromFile();
         float basePitch = config.getBasePitch();
-        float pitch = (config.getRandomPitch()) ?
+        float pitch = config.getRandomPitch() ?
                 (float) (basePitch + (Math.random() - 0.5) * 0.25) :
                 this.isFullyConnected(state) ? basePitch : basePitch + 0.05f;
         world.playSound(player, pos, RepeaterSound.BLOCK_REDSTONE_WIRE_CLICK, SoundCategory.BLOCKS, 0.3f, pitch);

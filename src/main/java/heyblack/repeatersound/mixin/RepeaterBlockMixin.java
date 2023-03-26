@@ -22,19 +22,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@Environment(value= EnvType.CLIENT)
 @Mixin(RepeaterBlock.class)
 public class RepeaterBlockMixin
 {
     @Shadow @Final public static IntProperty DELAY;
     @Inject(at = @At("TAIL"), method = "onUse")
-    @Environment(value= EnvType.CLIENT)
     public void playSound(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir)
     {
         Config config = ConfigManager.getInstance().getConfigFromFile();
         float basePitch = config.getBasePitch();
-        float pitch = (config.getRandomPitch()) ?
+        float pitch = config.getRandomPitch() ?
                 (float) (basePitch + (Math.random() - 0.5) * 0.25) :
-                ((basePitch - 0.02f) + state.cycle(DELAY).get(DELAY) * 0.02f);
+                (basePitch - 0.02f) + state.cycle(DELAY).get(DELAY) * 0.02f;
         world.playSound(player, pos, RepeaterSound.BLOCK_REPEATER_CLICK, SoundCategory.BLOCKS, 0.3f, pitch);
     }
 }

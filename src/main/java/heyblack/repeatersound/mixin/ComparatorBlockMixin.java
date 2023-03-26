@@ -2,6 +2,8 @@ package heyblack.repeatersound.mixin;
 
 import heyblack.repeatersound.config.Config;
 import heyblack.repeatersound.config.ConfigManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.enums.ComparatorMode;
@@ -19,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.minecraft.block.ComparatorBlock.MODE;
 
+@Environment(value= EnvType.CLIENT)
 @Mixin(ComparatorBlock.class)
 public class ComparatorBlockMixin
 {
@@ -34,9 +37,8 @@ public class ComparatorBlockMixin
     {
         Config config = ConfigManager.getInstance().getConfigFromFile();
         float basePitch = config.getBasePitch();
-        float pitch = (config.getRandomPitch()) ?
+        return config.getRandomPitch() ?
                 (float) (basePitch + (Math.random() - 0.5) * 0.25) :
                 (state = state.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? basePitch + 0.05f : basePitch;
-        return pitch;
     }
 }
